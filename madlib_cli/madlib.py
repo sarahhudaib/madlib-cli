@@ -30,12 +30,12 @@ def greet_user():
     '''))
     
     
-def read_template():
+def read_template(path):
     """
     Returns the template.txt file 
     """
     try:
-        file = open("madlib_cli/assets/template.txt",'r')
+        file = open(path,'r')
         content = file.read()
         return content   
     except FileNotFoundError:
@@ -103,7 +103,7 @@ def run():
     """
     greet_user()
     
-    content = read_template()
+    content = read_template('madlib_cli/assets/template.txt')
     lst = parse(content)
     words=[]
     for i in range(len(lst)):
