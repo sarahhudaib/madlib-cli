@@ -1,72 +1,67 @@
-from textwrap import dedent
-import re  # import using regex
+from textwrap import dedent 
+import re  # for regex 
 
 """
 Mad Libs
 The user is prompted to input random words which
 will be used to form a story with a default text file
-"""  
-def greeting():
-    """Greet the user and provide instructions."""
-    line_one = 'Welcome to madlibs game !!!!'
-    line_two = 'You will be asked to input some words to play the game !!!'
-    line_three = 'To exit the game please , type "quit"'
+"""
+
+def greet_user_prompt():
+    """
+    This greets the user when they first start
+    No input/output
+    """
+
+    ln_1 = 'Welcome to Madlibs Game!!'
+    ln_2 = 'You will be asked to input some words to play the game !!!'
+    ln_3 = 'When done, you\'ll receive a funny story!!!'
+    ln_4 = 'your completed madlibs will be saved in a filled_template.txt file.'
+    ln_5 = 'To exit at any time, don\'t type "quit" you can easily press the x button on your window :)'
 
     print(dedent(f'''
-        {'*' * 60}
-        {line_one}
-        {line_two}
-        {line_three}
-        {'*' * 60}
-        '''))
+    {'*' * 100}
+    {'{:^100}'.format(ln_1)}
+    {'{:^100}'.format(ln_2)}
+    {'{:^100}'.format(ln_3)}
+    {'{:^100}'.format(ln_4)}
+    {'{:^100}'.format(ln_5)}
+    {'*' * 100}
+    '''))
     
     
-######################################################################### 
-
-def read_template(path):
-    """Read a file path and return its contents as a string"""
-    with open(path, 'r') as f:
-        return f.read()
-    
-    
-    
-#########################################################################    
-def write_file(path, out):
-    """Write a file back to the given path."""
-    with open(path, 'w') as wf:
-        return wf.write(out)
-    
-    
-######################################################################### 
-def parse_template(format_string):
+def read_template():
     """
-    The text file contains several words classes
-    surrounded by curly braces. and its gonna use those curly braces to
-    create keys for each of them.
-    First, to find out how many keys I need to run a count
-    on the input string for all the open curly braces
-    Then form the keys by finding the index of
-    each set of curly and slicing out substring
-    of each.
-    The end result should be an array of each word contained
-    in two curly braces
+    Returns the template.txt file 
     """
-    keys = []
-    end = 0
+    file = open("madlib_cli/assets/template.txt",'r')
+    content = file.read()
+    return content
 
-    word_count = format_string.count('{')
-    for i in range(word_count):
-        # +1 so we get the first char inside the curly
-        start = format_string.find('{', end) + 1
-        end = format_string.find('}', start)
-        key = format_string[start:end]
-        keys.append(key)
-    print(keys)
-    return keys
+def parse(constant): # constant refers to the text
+    """
+    Returns a list of words inside {} in a given text
+    Arguments:
+        constant {string} -- text contains words inside {}
+    Output:
+        lst {list of string} -- the words inside {} 
+    """
+    lst=[]
+    res = re.findall(r'\{.*?\}', constant) 
+# to find all the curly braces which have value inside it too 
+# then put all of them and their values inside res
+    for i in res:
+        lst.append(i.strip("{ }"))    
+        
+# txt = ",,,,,rrttgg.....banana....rrr"
+# x = txt.strip(",.grt")
+# print(x)
+        
+# to remove every value in curly braces ,and get empty curly braces 
+    return lst
 
+def merge(constant , words):  
 
-######################################################################### 
-def merge(constant , words):
     """
     Returns a string with user input strings
     Arguments:
@@ -74,31 +69,40 @@ def merge(constant , words):
     Output:
          {string} -- replacing {} to words from the user 
     """
-    lst = parse_template(constant)  
+    lst = parse(constant)  
+# constant is the parsed text which has text and empty{} 
+# to put things inside curly braces in the step below
+    
     return (re.sub(r' {[^}]*}',' {}',constant)).format(*words) 
+# sub() function is used to replace occurrences of a particular sub-string with another sub-string. 
+# we use string.format() to give the string text which have text and 
+# empty curly braces values one by one from the values in format 
 
+""" we put * before the name of array so it will take elements one 
+    by one in the array which is (words), then put each value into 
+    empty braces """
 
-
-######################################################################### 
 def copyFile(text):
     print(text)
-    file = open('./assets/template.txt','w')
+    file = open('madlib_cli/assets/filled_template.txt','w')
     file.write(text)
 
-
-
-######################################################################### 
-if __name__ == "__main__":
-    print("Welcome to Madlib Game")
-    print("You will be asked to input some words to play the game !!!")
+def run():
+    """
+    this is the brains of the operation
+    This runs the whole madlibs program.
+    """
+    greet_user_prompt()
     
     content = read_template()
-    
-    lst = parse_template(content)
-    
+    lst = parse(content)
     words=[]
     for i in range(len(lst)):
         words.append(input("enter a {} ".format(lst[i])))
     toCopy = merge(content, words)
     copyFile(toCopy)
+
+
+if __name__ == "__main__":
+    run()
     
