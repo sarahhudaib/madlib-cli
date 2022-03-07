@@ -7,7 +7,7 @@ The user is prompted to input random words which
 will be used to form a story with a default text file
 """
 
-def greet_user_prompt():
+def greet_user():
     """
     This greets the user when they first start
     No input/output
@@ -34,9 +34,16 @@ def read_template():
     """
     Returns the template.txt file 
     """
-    file = open("madlib_cli/assets/template.txt",'r')
-    content = file.read()
-    return content
+    try:
+        file = open("madlib_cli/assets/template.txt",'r')
+        content = file.read()
+        return content   
+    except FileNotFoundError:
+        raise FileNotFoundError('Your file was not found')
+    except IOError:
+        raise IOError('There was an error reading your file')
+    
+
 
 def parse(constant): # constant refers to the text
     """
@@ -46,12 +53,14 @@ def parse(constant): # constant refers to the text
     Output:
         lst {list of string} -- the words inside {} 
     """
+    print("Please provide the following words: ")
     lst=[]
     res = re.findall(r'\{.*?\}', constant) 
 # to find all the curly braces which have value inside it too 
 # then put all of them and their values inside res
     for i in res:
-        lst.append(i.strip("{ }"))    
+        lst.append(i.strip("{ }")) 
+      
         
 # txt = ",,,,,rrttgg.....banana....rrr"
 # x = txt.strip(",.grt")
@@ -92,15 +101,16 @@ def run():
     this is the brains of the operation
     This runs the whole madlibs program.
     """
-    greet_user_prompt()
+    greet_user()
     
     content = read_template()
     lst = parse(content)
     words=[]
     for i in range(len(lst)):
         words.append(input("enter a {} ".format(lst[i])))
-    toCopy = merge(content, words)
-    copyFile(toCopy)
+ 
+ 
+    copyFile(merge(content, words))
 
 
 if __name__ == "__main__":
